@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milestone Time Capsules 🎂</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f7f2f9;
+            --primary-color: #8b5cf6;
+            --secondary-color: #a78bfa;
+            --accent-color: #ede9fe;
+            --text-color: #3b2f4a;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #balloon-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 999;
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -100px;
+            width: 40px; height: 50px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            animation: floatUp 5s linear infinite;
+            opacity: 0.85;
+        }
+
+        .balloon::after {
+            content: "";
+            position: absolute; bottom: -8px; left: 18px;
+            width: 2px; height: 15px;
+            background-color: #aaa;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(20deg); opacity: 0; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .card-box {
+            background: var(--card-bg);
+            padding: 30px 20px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.12);
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1, h2 {
+            font-family: 'Caveat', cursive;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Quicksand', sans-serif;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.6s ease forwards; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* STAGE 1: Welcome */
+        #screen-welcome h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        #screen-welcome p { color: #6b5b7a; font-size: 1rem; margin-bottom: 25px; }
+
+        /* STAGE 2: Chocolate Cake & Candles Styles */
+        .chocolate-cake-wrapper {
+            margin: 35px auto 20px auto;
+            position: relative;
+            display: inline-block;
+        }
+
+        .chocolate-cake {
+            width: 200px;
+            height: 130px;
+            background: linear-gradient(135deg, #4a2e18, #36210e);
+            border-radius: 15px 15px 8px 8px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(54, 33, 14, 0.3);
+            margin-top: 25px;
+        }
+
+        .chocolate-cake::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 35px;
+            background: linear-gradient(135deg, #5c3a21, #4a2e18);
+            border-radius: 15px 15px 5px 5px;
+            border-bottom: 4px dashed #6f4528;
+        }
+
+        .chocolate-frosting-drip {
+            position: absolute;
+            top: 32px; left: 0; width: 100%; height: 25px;
+            background: #d4a373;
+            border-radius: 0 0 15px 15px;
+            box-shadow: inset 0 -4px 6px rgba(0,0,0,0.15);
+        }
+
+        .candles-row {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .candle {
+            width: 12px;
+            height: 45px;
+            background: repeating-linear-gradient(45deg, #ff758c, #ff758c 10px, #ff7eb3 10px, #ff7eb3 20px);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .flame {
+            width: 16px;
+            height: 24px;
+            background: linear-gradient(to top, #ff9500, #ffcc00);
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -26px;
+            left: -2px;
+            box-shadow: 0 0 12px #ffbb00;
+            animation: flicker 0.6s infinite alternate;
+            transform-origin: bottom center;
+        }
+
+        .flame.extinguished {
+            display: none !important;
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-3deg); opacity: 0.9; }
+            100% { transform: scale(1.1) rotate(3deg); opacity: 1; }
+        }
+
+        /* STAGE 3: About Capsule Info */
+        .info-box-content { text-align: center; }
+        .info-box-content h2 { font-size: 2.3rem; margin-bottom: 15px; }
+        .info-intro { color: #6b5b7a; font-size: 1rem; margin-bottom: 20px; line-height: 1.5; }
+        
+        .guide-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .guide-card {
+            background: #faf8fc;
+            border: 2px solid var(--accent-color);
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.05);
+        }
+
+        .guide-card h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+        }
+
+        .guide-card p {
+            font-size: 0.85rem;
+            color: #554866;
+            line-height: 1.4;
+        }
+
+        /* STAGE 4: Vaults Grid */
+        .vaults-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .vault-card {
+            background: #fff;
+            border: 2px solid var(--accent-color);
+            border-radius: 16px;
+            padding: 15px 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            text-align: center;
+        }
+
+        .vault-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.15);
+        }
+
+        .vault-card.locked {
+            background: #faf8fc;
+            border-color: #e2d9eb;
+        }
+
+        .countdown-timer {
+            font-size: 0.7rem;
+            color: #d97706;
+            margin-top: 6px;
+            font-weight: bold;
+        }
+
+        .forever-btn {
+            background: linear-gradient(135deg, #fbcfe8, #f472b6);
+            color: #831843;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(244, 114, 182, 0.3);
+            transition: all 0.25s ease;
+            font-family: 'Quicksand', sans-serif;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .forever-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(244, 114, 182, 0.5);
+            background: linear-gradient(135deg, #f472b6, #db2777);
+            color: white;
+        }
+
+        /* STAGE 5: Core Memories Dashboard */
+        .badge-pill {
+            display: inline-block; background: #f3e8ff; color: #7c3aed;
+            padding: 5px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; margin-bottom: 10px;
+            word-break: break-word;
+        }
+        .dashboard-title { font-family: 'Caveat', cursive; font-size: 2.3rem; color: var(--primary-color); margin-bottom: 8px; }
+        .dashboard-subtitle { color: #6b5b7a; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.4; }
+
+        .features-grid {
+            display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 25px; text-align: left;
+        }
+
+        .feature-card {
+            background: #ffffff; border: 2px solid var(--accent-color); border-radius: 20px; padding: 20px 15px;
+            display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 6px 20px rgba(139, 92, 246, 0.05);
+        }
+
+        .feature-icon {
+            width: 38px; height: 38px; background: var(--accent-color); border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 12px;
+        }
+
+        .feature-title { font-family: 'Caveat', cursive; font-size: 1.6rem; color: var(--text-color); margin-bottom: 6px; }
+        .feature-desc { font-size: 0.85rem; color: #6b5b7a; line-height: 1.4; margin-bottom: 12px; }
+
+        .card-action-btn {
+            background: var(--accent-color); color: var(--primary-color); border: none; padding: 10px;
+            border-radius: 12px; font-weight: bold; font-family: 'Quicksand', sans-serif; cursor: pointer; transition: all 0.2s; text-align: center; width: 100%;
+        }
+        .card-action-btn:hover { background: var(--primary-color); color: white; }
+
+        .voucher-box {
+            display: none; background: linear-gradient(135deg, #7c3aed, #4c1d95); color: white; padding: 12px; border-radius: 12px; text-align: center;
+        }
+
+        /* Polaroid Section Styling */
+        .polaroid-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px; }
+        .polaroid-card {
+            background: white; padding: 10px 10px 15px 10px; border-radius: 8px; box-shadow: 0 8px 25px rgba(139, 92, 246, 0.1);
+            cursor: pointer; border: 1px solid #f3e8ff; transition: transform 0.3s; text-align: center;
+        }
+        .polaroid-card:hover { transform: translateY(-4px); }
+        .polaroid-img-box {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            background: #fdfcff;
+        }
+        .polaroid-img-box img, .polaroid-img-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .polaroid-caption { 
+            font-family: 'Caveat', cursive; 
+            font-size: 1.4rem; 
+            color: var(--primary-color); 
+        }
+        .polaroid-desc { 
+            font-family: 'Quicksand', sans-serif; 
+            font-size: 0.78rem; 
+            color: #6b5b7a; 
+            margin-top: 4px; 
+        }
+
+        /* MODALS */
+        .custom-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.45); align-items: center; justify-content: center; padding: 15px; z-index: 100;
+        }
+        .modal-content {
+            background: white; padding: 25px 15px; border-radius: 20px; width: 100%; max-width: 420px; text-align: center; position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); animation: fadeIn 0.3s ease;
+        }
+        .close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
+        input[type="password"] {
+            width: 90%; padding: 10px 15px; font-size: 1rem; border: 2px dashed var(--primary-color);
+            border-radius: 50px; outline: none; text-align: center; font-family: 'Quicksand', sans-serif; background-color: #faf8fc; margin-top: 12px;
+        }
+        .error-msg { color: #e63946; font-size: 0.8rem; display: none; margin-top: 6px; }
+        .hint-toggle-btn { background: none; border: none; color: var(--primary-color); font-size: 0.85rem; cursor: pointer; font-weight: bold; text-decoration: underline; margin-top: 12px; }
+        .hint-text { display: none; font-size: 0.8rem; color: #666; margin-top: 5px; font-style: italic; }
+
+        /* AGE 21 & AGE 50 CUSTOM STYLING */
+        .quiz-question {
+            margin-bottom: 8px;
+            font-size: 13px;
+            text-align: left;
+            background: #faf5ff;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #f3e8ff;
+        }
+        #quiz-result {
+            margin-top: 12px;
+            font-weight: bold;
+            color: #7c3aed;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .prediction-box {
+            background: #fff0f6;
+            padding: 10px 12px;
+            margin: 8px 0;
+            border-left: 4px solid #d63384;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        .prediction-box:hover {
+            background: #ffe3ec;
+        }
+        .hidden-prediction {
+            display: none;
+            margin-top: 5px;
+            font-style: italic;
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+        /* Desktop & Tablet Media Queries for Better Scaling */
+        @media (min-width: 600px) {
+            body { padding: 20px; }
+            .card-box { padding: 40px 30px; }
+            #screen-welcome h1 { font-size: 3rem; }
+            .guide-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+            .vaults-grid { grid-template-columns: repeat(3, 1fr); gap: 15px; }
+            .features-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+            .polaroid-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+            .modal-content { padding: 35px 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="balloon-container"></div>
+
+    <div class="container">
+        <!-- STAGE 1: Welcome Screen -->
+        <div id="screen-welcome" class="screen active card-box">
+            <h1>Hey Bestie! ✨</h1>
+            <p>A little secret world has been unlocked just for you. Are you ready?</p>
+            <button class="btn" onclick="goToScreen('screen-candle')">Start Celebration 🎉</button>
+        </div>
+
+        <!-- STAGE 2: Blow Chocolate Cake Candle Screen -->
+        <div id="screen-candle" class="screen card-box">
+            <h2 style="margin-bottom: 10px;">Get Ready to Blow! 🎂</h2>
+            
+            <div class="chocolate-cake-wrapper">
+                <div class="chocolate-cake">
+                    <div class="chocolate-frosting-drip"></div>
+                    <div class="candles-row">
+                        <div class="candle"><div class="flame" id="flame-1"></div></div>
+                        <div class="candle"><div class="flame" id="flame-2"></div></div>
+                        <div class="candle"><div class="flame" id="flame-3"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <p id="candle-text" style="font-size: 1.05rem; color: #6b5b7a; margin-bottom: 15px; font-weight: 600; line-height: 1.5;">Blow the candle in... 3</p>
+                <button class="btn" id="blow-btn" onclick="startCandleCountdown()">Blow Candles 💨</button>
+                
+                <div id="after-blow-action" style="display: none; margin-top: 15px;">
+                    <button class="btn" onclick="goToScreen('screen-about')">Next: View Time Capsule Info ✨</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STAGE 3: About Time Capsule Instructions -->
+        <div id="screen-about" class="screen card-box">
+            <div class="info-box-content">
+                <h2>How Your Time Capsule Works 🕰️</h2>
+                <p class="info-intro">Yeh ek unique dual-stage milestone vault system hai jo tumhare future ke har important padaav ko secure karta hai! ✨</p>
+                
+                <div class="guide-grid">
+                    <div class="guide-card">
+                        <h3>❄️ 1. Date-Lock & Freeze</h3>
+                        <p>Har future vault par ek real-time countdown aur strict date lock laga hua hai. Jab tak exact target birthday nahi aati, vault freeze rahega aur koi use nahi khol payega!</p>
+                    </div>
+                    <div class="guide-card">
+                        <h3>⏳ 2. Live Countdown</h3>
+                        <p>Vaults ke neeche live timer chalta rehta hai jo batata hai ki us milestone tak pahunchne mein abhi kitne din, ghante aur seconds baaki hain.</p>
+                    </div>
+                    <div class="guide-card">
+                        <h3>🔐 3. Dual-Stage Passcode</h3>
+                        <p>Target date aane ke baad freeze hat jata hai, lekin andar enter karne ke liye final secret passcode enter karna padta hai tabhi memory unlock hoti hai!</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="goToScreen('screen-vaults')">Explore Your Vaults Now ✨</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STAGE 4: All 6 Milestone Time Capsules Grid -->
+        <div id="screen-vaults" class="screen card-box">
+            <h2 style="font-size: 2.2rem; margin-bottom: 5px;">Milestone Time Capsules</h2>
+            <p style="color: #6b5b7a; font-size: 0.85rem; margin-bottom: 15px;">Vaults are time-locked. Check countdowns below!</p>
+            
+            <div class="vaults-grid">
+                <!-- Age 19 -->
+                <div class="vault-card" id="vault-19" onclick="tryOpenVault(19, 'Age 19 Vault')">
+                    <div style="font-size: 1.6rem; margin-bottom: 4px;">💖</div>
+                    <div style="font-family: 'Caveat', cursive; font-size: 1.1rem; color: var(--primary-color);">Age 19 Vault</div>
+                    <div id="status-19" style="font-size: 0.7rem; color: #10b981; margin-top: 3px; font-weight: bold;">Unlocked 🔓</div>
+                    <div class="countdown-timer" id="timer-19">Target: 13 Dec 2025</div>
+                </div>
+                <!-- Age 21 -->
+                <div class="vault-card locked" id="vault-21" onclick="tryOpenVault(21, 'Age 21 Vault')">
+                    <div style="font-size: 1.6rem; margin-bottom: 4px;">✨</div>
+                    <div style="font-family: 'Caveat', cursive; font-size: 1.1rem; color: var(--primary-color);">Age 21 Vault</div>
+                    <div id="status-21" style="font-size: 0.7rem; color: #d97706; margin-top: 3px; font-weight: bold;">Frozen ❄️</div>
+                    <div class="countdown-timer" id="timer-21">Loading...</div>
+                </div>
+                <!-- Age 25 -->
+                <div class="vault-card locked" id="vault-25" onclick="tryOpenVault(25, 'Age 25 Vault')">
+                    <div style="font-size: 1.6rem; margin-bottom: 4px;">🌟</div>
+                    <div style="font-family: 'Caveat', cursive; font-size: 1.1rem; color: var(--primary-color);">Age 25 Vault</div>
+                    <div id="status-25" style="font-size: 0.7rem; color: #d97706; margin-top: 3px; font-weight: bold;">Frozen ❄️</div>
+                    <div class="countdown-timer" id="timer-25">Loading...</div>
+                </div>
+                <!-- Age 30 -->
+                <div class="vault-card locked" id="vault-30" onclick="tryOpenVault(30, 'Age 30 Vault')">
+                    <div style="font-size: 1.6rem; margin-bottom: 4px;">🌸</div>
+                    <div style="font-family: 'Caveat', cursive; font-size: 1.1rem; color: var(--primary-color);">Age 30 Vault</div>
+                    <div id="status-30" style="font-size: 0.7rem; color: #d97706; margin-top: 3px; font-weight: bold;">Frozen ❄️</div>
+                    <div class="countdown-timer" id="timer-30">Loading...</div>
+                </div>
+                <!-- Age 40 -->
+                <div class="vault-card locked" id="vault-40" onclick="tryOpenVault(40, 'Age 40 Vault')">
+                    <div style="font-size: 1.6rem; margin-bottom: 4px;">☀️</div>
+                    <div style="font-family: 'Caveat', cursive; font-size: 1.1rem; color: var(--primary-color);">Age 40 Vault</div>
+                    <div id="status-40" style="font-size: 0.7rem; color: #d97706; margin-top: 3px; font-weight: bold;">Frozen ❄️</div>
+                    <div class="countdown-timer" id="timer-40">Loading...</div>
+                </div>
+                <!-- Age 50 -->
+                <div class="vault-card locked" id="vault-50" onclick="tryOpenVault(50, 'Age 50 Vault')">
+                    <div style="font-size: 1.6rem; margin-bottom: 4px;">👑</div>
+                    <div style="font-family: 'Caveat', cursive; font-size: 1.1rem; color: var(--primary-color);">Age 50 Vault</div>
+                    <div id="status-50" style="font-size: 0.7rem; color: #d97706; margin-top: 3px; font-weight: bold;">Frozen ❄️</div>
+                    <div class="countdown-timer" id="timer-50">Loading...</div>
+                </div>
+            </div>
+            
+            <!-- Our Forever Journey Button -->
+            <button class="forever-btn" onclick="goToScreen('screen-forever')">Our Forever Journey 💕</button>
+        </div>
+
+        <!-- STAGE 5: Core Memories Dashboard -->
+        <div id="screen-dashboard" class="screen card-box" style="text-align: left;">
+            <div style="text-align: center;">
+                <div class="badge-pill" id="dashboard-badge">✨ AGE 19 VAULT UNLOCKED • HAPPY 19th BIRTHDAY! ✨</div>
+                <h1 class="dashboard-title" id="dashboard-main-title">Age 19 Core Memories</h1>
+                <p class="dashboard-subtitle" id="dashboard-sub-desc">Stepping into the final year of your teens, unlocking new dreams, independence, and unforgettable chapters!</p>
+            </div>
+
+            <!-- TOP 3 STANDARD SECTIONS -->
+            <div class="features-grid" id="standard-features-grid">
+                <!-- Card 1: Golden Bestie Voucher -->
+                <div class="feature-card">
+                    <div>
+                        <div class="feature-icon">🎁</div>
+                        <div class="feature-title">Golden Bestie Voucher</div>
+                        <div class="feature-desc" id="voucher-desc-text">Click to scratch/reveal your special birthday perk valid 365 days!</div>
+                    </div>
+                    <div>
+                        <button class="card-action-btn" id="voucher-btn" onclick="scratchVoucher()">Click to Scratch Voucher 🎫</button>
+                        <div class="voucher-box" id="voucher-unlocked">
+                            <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #ffd166; font-weight: bold;">Unlocked! 1x</div>
+                            <div style="font-family: 'Caveat', cursive; font-size: 1.1rem; margin: 4px 0; line-height: 1.3;" id="voucher-content-text">Make me your personal chef for any one dish that u want to eat!</div>
+                            <div style="font-size: 0.65rem; opacity: 0.85;">(No expiration date. Redeemable anytime!)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: The Secret Letter -->
+                <div class="feature-card">
+                    <div>
+                        <div class="feature-icon">💌</div>
+                        <div class="feature-title">The Secret Letter</div>
+                        <div class="feature-desc">A heartfelt note written straight from my heart to yours.</div>
+                    </div>
+                    <button class="card-action-btn" onclick="openLetterModal()">Read Letter 💌</button>
+                </div>
+
+                <!-- Card 3: Why You're Iconic -->
+                <div class="feature-card">
+                    <div>
+                        <div class="feature-icon">💡</div>
+                        <div class="feature-title">Why You're Iconic</div>
+                        <div class="feature-desc" id="reason-text">"You laugh at my worst jokes and still stay my friend."</div>
+                    </div>
+                    <button class="card-action-btn" onclick="rotateReason()">Another Reason</button>
+                </div>
+            </div>
+
+            <!-- LOWER DYNAMIC SECTION -->
+            <div id="lower-dynamic-section" style="margin-top: 20px;"></div>
+
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="btn" style="background: #e2e8f0; color: #475569; font-size: 0.85rem; padding: 8px 18px;" onclick="goToScreen('screen-vaults')">⬅ Back to Vaults</button>
+            </div>
+        </div>
+
+        <!-- NEW PAGE / SCREEN: Our Forever Journey Page -->
+        <div id="screen-forever" class="screen card-box" style="text-align: center;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 12px;">Our Forever Journey 💕</h1>
+            <p style="color: #6b5b7a; font-size: 1rem; margin-bottom: 20px;">A special page dedicated to our everlasting bond and memories together!</p>
+            
+            <!-- Photo Box with childhood/sejalme.png -->
+            <div style="width: 100%; max-width: 300px; height: 280px; margin: 0 auto 15px auto; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15); border: 3px solid var(--accent-color); background: #faf8fc;">
+                <img src="childhood/sejalme.png" alt="Childhood Sejal Photo" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+
+            <!-- Exact Requested Message Below Photo -->
+            <div style="background: #faf8fc; padding: 15px; border-radius: 16px; border-left: 4px solid var(--primary-color); margin-bottom: 20px; text-align: left; font-size: 0.9rem; line-height: 1.5; color: #3b2f4a;">
+                <p>Aapla laahanpani cha photoch nahi aahe mhanun mi ha banavla. I know yevdha perfect nahi aahe, ani kadachit aapun tevha photo ghetla asta tar hya photo la tyach zar suddha nahi, pun tarihi maza aapla ek pramanik prayatna. I hope tula baghun bhari vatel, coz tbh mala khupachhhh bhari vatla banavtana ani baghtana. Mummychi tar kasli bhannat reaction hoti; tu baghayla havi hotis. Anyway, I hope tula maaze gifts aawadle astil. Once again, happy 19!🫶❤️️🎂</p>
+            </div>
+
+            <!-- The End Button with celebration trigger -->
+            <div>
+                <button class="btn" style="background: linear-gradient(135deg, #f472b6, #db2777); font-size: 1.1rem; padding: 12px 30px; width: 100%;" onclick="triggerEndCelebration()">The End ✨ (Celebrate!)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PASSCODE MODAL -->
+    <div id="passcode-modal" class="custom-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closePasscodeModal()">&times;</button>
+            <div style="font-size: 2.2rem; margin-bottom: 4px;">🔐</div>
+            <h3 id="modal-vault-title" style="font-family: 'Caveat', cursive; font-size: 2rem; color: var(--primary-color);">Age 19 Vault</h3>
+            <p style="font-size: 0.8rem; color: #666; margin-top: 2px;">Enter the secret passcode to breach the unlocked vault!</p>
+            
+            <input type="password" id="vault-pass-input" placeholder="•••••" autocomplete="off">
+            <br>
+            <button class="btn" style="margin-top: 12px; padding: 10px 25px;" onclick="verifyPasscode()">Unlock Time Capsule 🔓</button>
+            <div class="error-msg" id="modal-error">Incorrect password! Try again.</div>
+
+            <div>
+                <button class="hint-toggle-btn" onclick="toggleHint()">Need a hint?</button>
+                <div class="hint-text" id="hint-box">
+                    Hint: Follow the ripples. Look for the one who waddles. It's also what you love to call me.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FROZEN VAULT ALERT MODAL -->
+    <div id="frozen-modal" class="custom-modal">
+        <div class="modal-content" style="max-width: 380px;">
+            <button class="close-btn" onclick="closeFrozenModal()">&times;</button>
+            <div style="font-size: 2.5rem; margin-bottom: 4px;">❄️</div>
+            <h3 style="font-family: 'Caveat', cursive; font-size: 2rem; color: #d97706; margin-bottom: 6px;">Vault is Frozen!</h3>
+            <p id="frozen-modal-text" style="font-size: 0.9rem; color: #6b5b7a; line-height: 1.4; margin-bottom: 15px;">
+                Ye vault abhi freeze hai! Yeh target date par unfreeze hoga. Tab tak aap isse nahi khol sakte!
+            </p>
+            <button class="btn" style="padding: 10px 25px; background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="closeFrozenModal()">Got it! ✨</button>
+        </div>
+    </div>
+
+    <!-- LETTER POPUP MODAL -->
+    <div id="letter-modal" class="custom-modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <button class="close-btn" onclick="closeLetterModal()">&times;</button>
+            <div style="font-family: 'Caveat', cursive; font-size: 1.8rem; color: var(--primary-color); margin-bottom: 12px;">💌 To My Dearest Bestie,</div>
+            <p style="font-size: 0.9rem; line-height: 1.5; color: #3b2f4a; text-align: left; background: #faf8fc; padding: 12px; border-radius: 12px; border-left: 4px solid var(--primary-color);" id="letter-content-text">
+                Happiest birthday to my darling! 💓🎂 Cheers to growing up! 🥂✨ Oh my God, I still can’t believe we keep levelling up together! 😭 Badi ho gayi yaar tu! 🥹😂
+            </p>
+            <button class="btn" style="margin-top: 15px; padding: 10px 20px;" onclick="closeLetterModal()">Close Letter 💌</button>
+        </div>
+    </div>
+
+    <script>
+        // Milestone Target Dates (Based on Birth Date: 13 December 2006)
+        const vaultTargetDates = {
+            19: new Date('2025-12-13T00:00:00'),
+            21: new Date('2027-12-13T00:00:00'),
+            25: new Date('2031-12-13T00:00:00'),
+            30: new Date('2036-12-13T00:00:00'),
+            40: new Date('2046-12-13T00:00:00'),
+            50: new Date('2056-12-13T00:00:00')
+        };
+
+        let currentVaultAge = 19;
+        let vaultScratchStates = {};
+        let currentReasonIdx = 0;
+
+        window.onload = function() {
+            updateAllCountdowns();
+            setInterval(updateAllCountdowns, 1000);
+        };
+
+        function updateAllCountdowns() {
+            const now = new Date();
+            for (let age in vaultTargetDates) {
+                const target = vaultTargetDates[age];
+                const timerElem = document.getElementById(`timer-${age}`);
+                const statusElem = document.getElementById(`status-${age}`);
+                const cardElem = document.getElementById(`vault-${age}`);
+
+                const diff = target - now;
+
+                if (diff <= 0) {
+                    if(timerElem) timerElem.innerText = "Status: Unfrozen! 🎉";
+                    if(statusElem) {
+                        statusElem.innerText = "Ready to Unlock 🔓";
+                        statusElem.style.color = "#10b981";
+                    }
+                    if(cardElem) cardElem.classList.remove('locked');
+                } else {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                    const mins = Math.floor((diff / 1000 / 60) % 60);
+                    const secs = Math.floor((diff / 1000) % 60);
+
+                    if(timerElem) {
+                        timerElem.innerText = `⏳ ${days}d ${hours}h ${mins}m ${secs}s left`;
+                    }
+                }
+            }
+        }
+
+        function tryOpenVault(age, vaultName) {
+            const now = new Date();
+            const target = vaultTargetDates[age];
+
+            if (now < target) {
+                showFrozenModal(vaultName, target);
+                return;
+            }
+
+            openPasscodeModal(vaultName, age);
+        }
+
+        function showFrozenModal(vaultName, targetDate) {
+            const modalText = document.getElementById('frozen-modal-text');
+            modalText.innerHTML = `<b>${vaultName}</b> abhi freeze hai! Yeh vault <b>${targetDate.toDateString()}</b> ko target date par unfreeze hoga. Tab tak aap isse nahi khol sakte! ❄✨`;
+            document.getElementById('frozen-modal').style.display = 'flex';
+        }
+
+        function closeFrozenModal() {
+            document.getElementById('frozen-modal').style.display = 'none';
+        }
+
+        function goToScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function startCandleCountdown() {
+            const textElem = document.getElementById('candle-text');
+            const btnElem = document.getElementById('blow-btn');
+            btnElem.style.display = 'none';
+            
+            let count = 3;
+            textElem.innerText = `Blow the candle in... ${count}`;
+            let timer = setInterval(() => {
+                count--;
+                if(count > 0) {
+                    textElem.innerText = `Blow the candle in... ${count}`;
+                } else {
+                    clearInterval(timer);
+                    textElem.innerHTML = "✨ Happy birthday to you, Sejal, may God bless you.<br>Here's an amazing gift from your bestie. Hope you like it! 🎉";
+                    
+                    document.getElementById('flame-1').classList.add('extinguished');
+                    document.getElementById('flame-2').classList.add('extinguished');
+                    document.getElementById('flame-3').classList.add('extinguished');
+
+                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.5 } });
+                    launchBalloons();
+
+                    document.getElementById('after-blow-action').style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        function openPasscodeModal(vaultName, age) {
+            currentVaultAge = age;
+            document.getElementById('modal-vault-title').innerText = vaultName;
+            document.getElementById('vault-pass-input').value = '';
+            document.getElementById('modal-error').style.display = 'none';
+            document.getElementById('hint-box').style.display = 'none';
+            document.getElementById('passcode-modal').style.display = 'flex';
+        }
+
+        function closePasscodeModal() {
+            document.getElementById('passcode-modal').style.display = 'none';
+        }
+
+        function toggleHint() {
+            const hintBox = document.getElementById('hint-box');
+            hintBox.style.display = hintBox.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function verifyPasscode() {
+            const val = document.getElementById('vault-pass-input').value.trim().toLowerCase();
+            const errorMsg = document.getElementById('modal-error');
+
+            if (val === 'badak') {
+                errorMsg.style.display = 'none';
+                closePasscodeModal();
+                loadVaultDashboard(currentVaultAge);
+                goToScreen('screen-dashboard');
+                confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        document.getElementById('vault-pass-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') verifyPasscode();
+        });
+
+        function scratchVoucher() {
+            vaultScratchStates[currentVaultAge] = true;
+            updateVoucherDisplay();
+            confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+        }
+
+        function updateVoucherDisplay() {
+            const isScratched = vaultScratchStates[currentVaultAge] || false;
+            const vouchers = {
+                19: "Make me your personal chef for any one dish that u want to eat!",
+                21: "Limited coffee & snack date within my budget on me, anytime anywhere!",
+                25: "One free shopping companion pass fully sponsored!",
+                30: "A custom handmade artwork or personalised craft made just by me!",
+                40: "A golden pass: Ask for anything and you will get it!",
+                50: "A lifetime VIP pass for unlimited tea, gossip, and unconditional love! (Customisation possible)"
+            };
+            
+            const voucherTextElem = document.getElementById('voucher-content-text');
+            if(voucherTextElem) voucherTextElem.innerText = vouchers[currentVaultAge] || vouchers[19];
+
+            const voucherBtn = document.getElementById('voucher-btn');
+            const voucherDesc = document.getElementById('voucher-desc-text');
+            const voucherUnlocked = document.getElementById('voucher-unlocked');
+
+            if (voucherBtn && voucherUnlocked) {
+                if (isScratched) {
+                    voucherBtn.style.display = 'none';
+                    if(voucherDesc) voucherDesc.style.display = 'none';
+                    voucherUnlocked.style.display = 'block';
+                } else {
+                    voucherBtn.style.display = 'block';
+                    if(voucherDesc) voucherDesc.style.display = 'block';
+                    voucherUnlocked.style.display = 'none';
+                }
+            }
+        }
+
+        function openLetterModal() { 
+            const letters = {
+                19: `Happiest birthday to my darling! 💓🎂 Cheers to growing up! 🥂✨ Oh my God, I still can’t believe we keep levelling up together! 😭 Badi ho gayi yaar tu! 🥹😂<br><br>
+                Thank you for always being my constant. No matter where life takes us, a call is a MUST! Because remember, for you, I’m always just one call away. 🫶🏻<br><br>
+                Love you loads! 💗 Enjoy your day to the fullest and enjoy these little gifts too! 🎁🥰 I really hope you like them! 💓🎂🫶🏻`,
+                21: "Happy 21st adulting milestone! 🥂✨ Welcome to the official adult world. No matter how complex things get, remember I've got your back through thick and thin. Let's conquer the world together! 🚀",
+                25: "Happy Quarter-Century! 🌟 Look at how far we've come. Is it just me, or do we all think that now you have become even more beautiful, darling!!!! ❤❤️🫶 Remember, no achievements are big or small; they are all achievements altogether. I love you so much.",
+                30: "Happy Fabulous 30s! 🌸 Entering a new decade of wisdom, unmatched grace, and peace. May this year bring you all the success and happiness you truly deserve! ✨ Enjoy your day. Sometimes it is okay to keep your work aside and just take a well-deserved break. I don't know what you've become now, but I know that you've become successful, and I'm so proud of you for that.",
+                40: "Dear Sejii, Happy 40th Birthday! ☀️ Decades have flown by, but our bond remains as pure and lively as day one. You are a true icon of strength and elegance! 👑 We are still together, aren't we?? If not, know that I love you and miss you a lot. ",
+                50: "Happy Golden 50th Milestone! 👑 Celebrating half a century of pure legacy, timeless memories, and a friendship that stands above everything else. Love you forever! 💫 Zaalis na mhatari ki nahi ajun?? Daat aahet na shabut?? Cake kha bday cha. 😂😁"
+            };
+            document.getElementById('letter-content-text').innerHTML = letters[currentVaultAge] || letters[19];
+            document.getElementById('letter-modal').style.display = 'flex'; 
+        }
+
+        function closeLetterModal() { document.getElementById('letter-modal').style.display = 'none'; }
+
+        function triggerEndCelebration() {
+            confetti({ particleCount: 200, spread: 120, origin: { y: 0.6 } });
+            launchBalloons();
+        }
+
+        const vaultReasons = {
+            19: [
+                "You laugh at my worst jokes and still call me your friend (ik they are lame 😭).",
+                "You are a fool for choosing me, but you are also beautiful 🌸 (kasa sahan kartes mala?!).",
+                "You give me the absolute best life advice (even when you don't know what you're doing).",
+                "You can’t handle crying when you’re at your worst, yet you always know how to advise me like a gyaanibaba! 😂"
+            ],
+            21: [
+                "You bring out the craziest and happiest energy in me!",
+                "Your 21st adulting spirit is unmatched (even when you're super sleepy).",
+                "You make the best plans and cancel them with equal enthusiasm! 😂",
+                "You are my partner-in-crime for all midnight snacks."
+            ],
+            25: [
+                "You have grown into such a fierce, independent, and goal-oriented queen.",
+                "Aatta tari tuze organisational skills bare zaale aahet na? Ki ajun pun aalshich aahes??",
+                "You know how to light up any room you walk into with your positive energy.",
+                "You remember the tiniest details about everyone you care about. 💖"
+            ],
+            30: [
+                "At 30, you're the definition of grace, success, and absolute icon behaviour.",
+                "You handle every storm with your signature calm smile.",
+                "Your wisdom helps me sort out my life crisis every single time.",
+                "You're ageing like fine wine (and still as mischievous as ever)!"
+            ],
+            40: [
+                "You can be a kid at heart even at 40, and that's your superpower.",
+                "You have built a legendary life full of beautiful memories and strong values.",
+                "Your laughter still sounds like our teenage days—bhayankar!",
+                "Wanna play another WWE just like our childhood?? Ekda kaichit pakad mala. ☀️"
+            ],
+            50: [
+                "Fifty looks breathtakingly gorgeous on you! 👑 Hotty!",
+                "Your legacy of love, kindness, and resilience inspires everyone.",
+                "Zaalis na mhatari ki nahi ajun?? Daat aahet na shabut?? 😂",
+                "No matter how old we get, you'll always be my favourite bestie."
+            ]
+        };
+
+        function rotateReason() {
+            const reasonsList = vaultReasons[currentVaultAge] || vaultReasons[19];
+            currentReasonIdx = (currentReasonIdx + 1) % reasonsList.length;
+            const reasonTextElem = document.getElementById('reason-text');
+            if(reasonTextElem) reasonTextElem.innerText = `"${reasonsList[currentReasonIdx]}"`;
+        }
+
+        const vaultInfo = {
+            19: { subtitle: "Stepping into the final year of your teens, unlocking new dreams, independence, and unforgettable chapters!" },
+            21: { subtitle: "Age 21 Special: 10 Quirky checklist & interactive points built specially for your adulting journey!" },
+            25: { subtitle: "Quarter-century milestone! Hitting the golden era of figuring life out with absolute style and grace." },
+            30: { subtitle: "Age 30 Special: Your exclusive video capsule recorded in the Recording 30 folder!" },
+            40: { subtitle: "The magnificent forties! Thriving with timeless memories, unmatched elegance, and pure heart." },
+            50: { subtitle: "Age 50 Special: Virtual Magic Mirror predictions to reveal your hilarious future!" }
+        };
+
+        const vaultMemoryData = {
+            19: [
+                { title: "Memory #1", sub: "The handy memory 🫶", img: "Polaroid 19/1.jpeg", back: "Remember this? We thought he was casually taking a picture of our hands together, but no, we were making pure gold memory.", type: "img" },
+                { title: "Memory #2", sub: "The little us 😭", img: "Polaroid 19/2.jpg", back: "Unfiltered us: coz literally no filters, no makeup was used. And we thought we were the heroines!", type: "img" },
+                { title: "Memory #3", sub: "The project and chaos 😵‍💫", img: "Polaroid 19/3.jpg", back: "How much effort went into this one photo? Only we know that the BTS is absolutely a secret!", type: "img" }
+            ],
+            25: [
+                { title: "Memory #1", sub: "Quarter-century vibes ✨", img: "Polaroid 25/1.jpg", back: "Look how far we've come by age 25! So proud of us. 💫", type: "img" },
+                { title: "Memory #2", sub: "Before pandal scenes", img: "Polaroid 25/2.jpeg", back: "Remember how much fun we used to have while visiting the ganpati pandals?", type: "img" },
+                { title: "Memory #3", sub: "The unexpected group 😁", img: "Polaroid 25/3.jpeg", back: "Sometimes it's all about surprises like this one- a surprising Group formed for just a few minutes.", type: "img" }
+            ],
+            40: [
+                { title: "Memory #1", sub: "Cringey us 😭", img: "Polaroid 40/1.jpeg", back: "On 40, take a moment to look back at how cringey we were in the past.", type: "img" },
+                { title: "Memory #2", sub: "We the three ❤️", img: "Polaroid 40/2.jpg", back: "Decades down, and this still feels like yesterday. You + Me + Mummy = the bond that never broke.", type: "img" },
+                { title: "Memory #3", sub: "Vlogging at its peak 🎥", img: "Polaroid 40/3.mp4", back: "A moving memory of our timeless us moment and fun!", type: "video" }
+            ]
+        };
+
+        function loadVaultDashboard(age) {
+            currentReasonIdx = 0;
+            document.getElementById('dashboard-badge').innerText = `✨ AGE ${age} VAULT UNLOCKED • HAPPY ${age}${getOrdinalSuffix(age)} BIRTHDAY! ✨`;
+            document.getElementById('dashboard-main-title').innerText = `Age ${age} Core Memories`;
+            
+            if(vaultInfo[age]) {
+                document.getElementById('dashboard-sub-desc').innerText = vaultInfo[age].subtitle;
+            } else {
+                document.getElementById('dashboard-sub-desc').innerText = `A special time capsule locked specifically for your milestones at Age ${age}.`;
+            }
+
+            updateVoucherDisplay();
+            const reasonsList = vaultReasons[age] || vaultReasons[19];
+            const reasonTextElem = document.getElementById('reason-text');
+            if(reasonTextElem) reasonTextElem.innerText = `"${reasonsList[0]}"`;
+
+            const lowerContainer = document.getElementById('lower-dynamic-section');
+            lowerContainer.innerHTML = '';
+
+            if (age === 21) {
+                lowerContainer.innerHTML = `
+                    <div class="feature-card" style="max-width: 100%; text-align: left; margin-bottom: 15px;">
+                        <div class="feature-icon">✨</div>
+                        <div class="feature-title" style="text-align: center;">Age 21: 10 Adulting & Quirky Checkpoints</div>
+                        <p style="text-align: center; color: #6b5b7a; font-size: 0.85rem; margin-bottom: 12px;">Check what applies to you and calculate your ultimate adulting grade!</p>
+                        
+                        <div class="quiz-question"><label><input type="checkbox" class="quiz-chk" value="1"> 1. Kya tum raat ko 3 baje chupke se Maggi banakar khati ho?</label></div>
+                        <div class="quiz-question"><label><input type="checkbox" class="quiz-chk" value="1"> 2. Kya tumhari phone gallery khud se jyada dusro ke photos se bhari padi hai?</label></div>
+                        <div class="quiz-question"><label><input type="checkbox" class="quiz-chk" value="1"> 3. Kya Pinterest par DIY crafts dekh kar, unhe khud banane ka junoon sawar hota hai?</label></div>
+                        <div class="quiz-question"><label><input type="checkbox" class="quiz-chk" value="1"> 4. Kya tum alarm lagakar subah 5 minute mein uthne ki kasam khati ho par 10 snooze dabati ho?</label></div>
+                        <div class="quiz-question"><label><input type="checkbox" class="quiz-chk" value="1"> 5. Kya tumhe achanak se midnight pe spicy-tangy food ki craving hoti hai?</label></div>
+                        <div class="quiz-question"><label><input type="checkbox" class="quiz-chk" value="1"> 6. Do you have any creative thing that you have kept a secret from me?</label></div>
+                        <div class="quiz-question"><label><input type="checkbox" class="quiz-chk" value="1"> 7. Kya tum apne favourite songs par akele room mein dance karti ho?</label></div>
+                        <div class="quiz-question"><label><input type="checkbox" class="quiz-chk" value="1"> 8. Kya shopping karte waqt tumhara sabse pehla dhyaan cute stationery ya gift items par jata hai?</label></div>
+                        <div class="quiz-question"><label><input type="checkbox" class="quiz-chk" value="1"> 9. Kya tumhari dosti ka ek hi rule hai: 'Chahe kuch bhi ho jaye, gossip miss nahi honi chahiye'?</label></div>
+                        <div class="quiz-question"><label><input type="checkbox" class="quiz-chk" value="1"> 10. Kya tum dil se bilkul bachhi ho par baatein bade-bade gyaan wali karti ho? 😂</label></div>
+
+                        <button class="btn" onclick="calculateGrade()" style="width: 100%; margin-top: 10px;">Calculate My Adulting Grade 🎯</button>
+                        <div id="quiz-result"></div>
+                    </div>
+                `;
+            } else if (age === 30) {
+                lowerContainer.innerHTML = `
+                    <div class="feature-card" style="max-width: 100%; text-align: center; margin-bottom: 15px;">
+                        <div class="feature-icon" style="margin: 0 auto 12px auto;">🌸</div>
+                        <div class="feature-title">Age 30 Special Video Recording</div>
+                        <p style="color: #6b5b7a; font-size: 0.85rem; margin-bottom: 12px;">Saved in <b>Recording 30/recording.mp4</b></p>
+                        <video controls style="width: 100%; max-height: 280px; border-radius: 12px; background: #000;">
+                            <source src="Recording 30/recording.mp4" type="video/mp4">
+                            Aapka browser video tag ko support nahi karta.
+                        </video>
+                    </div>
+                `;
+            } else if (age === 50) {
+                lowerContainer.innerHTML = `
+                    <div class="feature-card" style="max-width: 100%; text-align: left; margin-bottom: 15px;">
+                        <div class="feature-icon" style="margin: 0 auto 12px auto;">👑</div>
+                        <div class="feature-title" style="text-align: center;">Age 50: Virtual Magic Mirror Predictions</div>
+                        <p style="text-align: center; font-size: 0.8rem; color: #6b5b7a; margin-bottom: 12px;">Click each prediction box below to reveal your hilarious future!</p>
+                        
+                        <div class="prediction-box" onclick="revealPrediction(this)">
+                            🥛 <b>Prediction 1 (Horlicks special):</b> (Click to reveal)
+                            <div class="hidden-prediction">"Aapli embarrassing Horlicks milk recipe ajun pun secretach aahe na?? Ki tuzya mulanna sangitlis??"</div>
+                        </div>
+
+                        <div class="prediction-box" onclick="revealPrediction(this)">
+                            🌸 <b>Prediction 2 (Hobby):</b> (Click to reveal)
+                            <div class="hidden-prediction">"Ajun pun tuzi favourite hobby japtes na?? - zopna??"</div>
+                        </div>
+
+                        <div class="prediction-box" onclick="revealPrediction(this)">
+                            🧶 <b>Prediction 3 (Crocheting):</b> (Click to reveal)
+                            <div class="hidden-prediction">"Ghar cha asa konta kopra aahe ka jithe crocheted goshti mala saapadnar nahit??"</div>
+                        </div>
+
+                        <div class="prediction-box" onclick="revealPrediction(this)">
+                            🌶️ <b>Prediction 4 (Midnight Cravings):</b> (Click to reveal)
+                            <div class="hidden-prediction">"Raatri ajun hi khadadtes ka kahitari?"</div>
+                        </div>
+
+                        <div class="prediction-box" onclick="revealPrediction(this)">
+                            ✨ <b>Prediction 5 (The Ultimate Title):</b> (Click to reveal)
+                            <div class="hidden-prediction">"Final Verdict: Whatever ur age becomes, but aaj hi tu tashich aahes tuzya nava pramane, jal jaise - Jal sa!"</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                lowerContainer.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 5px; text-align: left;">
+                        <div style="font-family: 'Caveat', cursive; font-size: 2rem; color: var(--primary-color);">Polaroid Memory Vault 📸</div>
+                        <p style="font-size: 0.8rem; color: #6b5b7a;">Tap any polaroid to flip and read the secret back message</p>
+                    </div>
+                    <div class="polaroid-grid" id="polaroid-cards-wrapper"></div>
+                `;
+                renderPolaroids(age);
+            }
+        }
+
+        function calculateGrade() {
+            const checkboxes = document.querySelectorAll('.quiz-chk:checked');
+            const score = checkboxes.length;
+            const resultDiv = document.getElementById('quiz-result');
+
+            let grade = "";
+            let cuteLine = "";
+
+            if (score >= 8) {
+                grade = "Grade: O+ (Ultimate Legend Queen)";
+                cuteLine = "Aapka adulting level expert hai, par bachpana 100% zinda hai! Absolute icon! ✨";
+            } else if (score >= 5) {
+                grade = "Grade: A+ (Pro Adulting Bestie)";
+                cuteLine = "Ekdum mast vibe hai! Life ko full enjoy karne wali spirit! 🚀";
+            } else {
+                grade = "Grade: B+ (Chill Mode On)";
+                cuteLine = "Thoda chill, thoda lazy, par sabse pyaari soul! 💖";
+            }
+
+            if(resultDiv) {
+                resultDiv.innerHTML = `Your Score: ${score}/10 <br> ${grade} <br> <em style="font-size:0.9rem;">"${cuteLine}"</em>`;
+            }
+        }
+
+        function revealPrediction(element) {
+            const hidden = element.querySelector('.hidden-prediction');
+            if (hidden) {
+                hidden.style.display = (hidden.style.display === "block") ? "none" : "block";
+            }
+        }
+
+        function getOrdinalSuffix(num) {
+            const j = num % 10, k = num % 100;
+            if (j == 1 && k != 11) return "st";
+            if (j == 2 && k != 12) return "nd";
+            if (j == 3 && k != 13) return "rd";
+            return "th";
+        }
+
+        function renderPolaroids(age) {
+            const wrapper = document.getElementById('polaroid-cards-wrapper');
+            if(!wrapper) return;
+            wrapper.innerHTML = '';
+            const data = vaultMemoryData[age];
+            if(!data) return;
+
+            data.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = 'polaroid-card';
+                card.dataset.flipped = "false";
+                card.onclick = () => flipMemory(card, age, idx);
+
+                let mediaElement = '';
+                if(item.type === 'video') {
+                    mediaElement = `<video src="${item.img}" autoplay muted loop playsinline></video>`;
+                } else {
+                    mediaElement = `<img src="${item.img}" alt="Memory ${idx + 1}">`;
+                }
+
+                card.innerHTML = `
+                    <div class="polaroid-inner-content">
+                        <div class="polaroid-img-box">
+                            ${mediaElement}
+                        </div>
+                        <div class="polaroid-caption">${item.title}</div>
+                        <div class="polaroid-desc">${item.sub}</div>
+                    </div>
+                `;
+                wrapper.appendChild(card);
+            });
+        }
+
+        function flipMemory(cardElement, age, idx) {
+            const innerDiv = cardElement.querySelector('.polaroid-inner-content');
+            const isFlipped = cardElement.dataset.flipped === "true";
+            const dataArr = vaultMemoryData[age];
+            const item = dataArr[idx];
+
+            if (!isFlipped) {
+                cardElement.dataset.flipped = "true";
+                cardElement.style.background = "#fff9db";
+                innerDiv.innerHTML = `
+                    <div style="padding: 15px 10px; min-height: 220px; display: flex; flex-direction: column; justify-content: center;">
+                        <div style="font-family: 'Caveat', cursive; font-size: 1.4rem; color: #d97706; margin-bottom: 6px;">Remember this? 💭</div>
+                        <div style="font-family: 'Quicksand', sans-serif; font-size: 0.8rem; color: #451a03; line-height: 1.4;">${item.back}</div>
+                    </div>
+                `;
+            } else {
+                cardElement.dataset.flipped = "false";
+                cardElement.style.background = "white";
+                let mediaElement = (item.type === 'video') ? `<video src="${item.img}" autoplay muted loop playsinline></video>` : `<img src="${item.img}" alt="Memory ${idx + 1}">`;
+                innerDiv.innerHTML = `
+                    <div class="polaroid-img-box">
+                        ${mediaElement}
+                    </div>
+                    <div class="polaroid-caption">${item.title}</div>
+                    <div class="polaroid-desc">${item.sub}</div>
+                `;
+            }
+        }
+
+        function launchBalloons() {
+            const container = document.getElementById('balloon-container');
+            const colors = ['#ff758c', '#ff7eb3', '#a78bfa', '#f472b6', '#fb7185', '#60a5fa'];
+            for(let i=0; i<15; i++) {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                balloon.style.left = Math.random() * 100 + 'vw';
+                balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.animationDuration = (3 + Math.random() * 3) + 's';
+                balloon.style.animationDelay = (Math.random() * 2) + 's';
+                container.appendChild(balloon);
+                setTimeout(() => { balloon.remove(); }, 6000);
+            }
+        }
+    </script>
+</body>
+</html>
